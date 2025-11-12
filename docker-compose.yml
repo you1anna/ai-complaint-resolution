@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  complaint-resolution:
+    build: .
+    container_name: ai-complaint-resolution
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - CLAUDE_MODEL=${CLAUDE_MODEL:-claude-3-5-sonnet-20241022}
+      - DATABASE_URL=sqlite:////app/data/complaint_resolution.db
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - ENABLE_HUMAN_REVIEW=${ENABLE_HUMAN_REVIEW:-true}
+      - CONFIDENCE_THRESHOLD=${CONFIDENCE_THRESHOLD:-0.85}
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config
+      - ./.env:/app/.env
+    working_dir: /app
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+volumes:
+  complaint_data:
+    driver: local
