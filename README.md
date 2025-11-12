@@ -13,9 +13,11 @@ This project demonstrates an AI-powered system for automating travel insurance c
 - [Architecture](#architecture)
 - [Quick Start](#quick-start)
 - [Usage Examples](#usage-examples)
+- [CLI Reference](#cli-reference)
 - [Project Structure](#project-structure)
 - [Configuration](#configuration)
-- [Development](#development)
+- [Testing](#testing)
+- [Documentation](#documentation)
 - [Business Impact](#business-impact)
 
 ---
@@ -272,6 +274,51 @@ for result in results:
 
 ---
 
+## 🖥️ CLI Reference
+
+The system includes a unified CLI for all operations:
+
+```bash
+# Initialize system and seed data
+python cli.py init
+
+# List complaints (with optional filters)
+python cli.py list
+python cli.py list --status new
+python cli.py list --urgency high
+
+# Process a complaint
+python cli.py process COMP-2024-001
+python cli.py process COMP-2024-001 --save  # Save results to JSON
+
+# Review a complaint
+python cli.py review COMP-2024-001 --reviewer "John Smith"
+
+# View metrics
+python cli.py metrics                    # Summary report
+python cli.py metrics --type processing  # Processing metrics
+python cli.py metrics --type savings     # Time/cost savings
+python cli.py metrics --type quality     # Quality metrics
+python cli.py metrics --type sla         # SLA compliance
+
+# Validate configuration
+python cli.py validate
+```
+
+### Makefile Shortcuts
+
+```bash
+make help          # Show all available commands
+make install       # Install dependencies
+make init          # Initialize and seed database
+make run-example   # Run example workflow
+make metrics       # Display metrics
+make test          # Run test suite
+make clean         # Clean generated files
+```
+
+---
+
 ## 📁 Project Structure
 
 ```
@@ -335,52 +382,93 @@ CONFIDENCE_THRESHOLD=0.85
 
 ---
 
+## 🧪 Testing
+
+The project includes a comprehensive test suite:
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=src --cov-report=html
+
+# Run specific test file
+pytest tests/test_validators.py
+
+# Run with verbose output
+pytest -v
+
+# Using Makefile
+make test
+```
+
+### Test Structure
+
+- `tests/conftest.py` - Shared fixtures and test utilities
+- `tests/test_validators.py` - Validation logic tests
+- `tests/test_utils.py` - Utility function tests
+- More tests to be added for workflow, database, etc.
+
+### Writing Tests
+
+```python
+# Example test
+def test_complaint_validation(sample_complaint):
+    """Test complaint validation."""
+    from src.validators import ComplaintValidator
+
+    is_valid, errors = ComplaintValidator.validate_complaint(sample_complaint)
+    assert is_valid
+    assert len(errors) == 0
+```
+
+See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for full testing guide.
+
+---
+
+## 📚 Documentation
+
+### Available Documentation
+
+- **[README.md](README.md)** - Main documentation (this file)
+- **[docs/API.md](docs/API.md)** - Complete API reference and Python examples
+- **[docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** - Common issues and solutions
+- **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)** - Developer guide and contribution guidelines
+
+### Quick Links
+
+- [API Usage Examples](docs/API.md#complete-example-process-complaint-end-to-end)
+- [Troubleshooting Guide](docs/TROUBLESHOOTING.md)
+- [Adding New Features](docs/DEVELOPMENT.md#adding-features)
+- [Code Style Guide](docs/DEVELOPMENT.md#code-style)
+
+---
+
 ## 🔧 Development
 
-### Adding New Language Support
+For detailed development information, see [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
-1. Update `config/config.yaml`:
-```yaml
-supported_languages:
-  - en
-  - it
-  - pt  # Add Portuguese
-```
+### Quick Development Guide
 
-2. Add policy documents in the new language
+**Adding New Language Support:**
+1. Update `config/config.yaml`
+2. Add policy documents in new language
+3. Test with complaints
 
-3. Test with complaints in that language
+**Adding New Categories:**
+1. Update `src/models.py` enum
+2. Update `config/config.yaml`
+3. Update classification prompts
 
-### Adding New Complaint Categories
+**Switching to PostgreSQL:**
+```bash
+# Update requirements
+pip install psycopg2-binary
 
-1. Update `src/models.py`:
-```python
-class ComplaintCategory(str, Enum):
-    # ... existing categories
-    NEW_CATEGORY = "new_category"
-```
-
-2. Update `config/config.yaml`:
-```yaml
-complaint_categories:
-  - new_category
-```
-
-3. Update classification prompts in `complaint_classifier.py`
-
-### Switching to PostgreSQL
-
-1. Update `requirements.txt`:
-```
-psycopg2-binary>=2.9.0
-```
-
-2. Update `.env`:
-```
+# Update .env
 DATABASE_URL=postgresql://user:password@localhost:5432/complaints
 ```
-
-3. Database operations remain unchanged (SQLAlchemy abstraction)
 
 ---
 
