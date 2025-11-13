@@ -96,7 +96,9 @@ class CLI:
 
     def cmd_list(self, args):
         """List complaints"""
-        self.init_components()
+        # Only initialize database, not workflow (doesn't need API key)
+        if not self.db:
+            self.db = Database()
 
         complaints = self.db.get_all_complaints()
 
@@ -263,7 +265,9 @@ class CLI:
 
     def cmd_metrics(self, args):
         """Display system metrics"""
-        self.init_components()
+        # Only initialize database, not workflow
+        if not self.db:
+            self.db = Database()
 
         collector = MetricsCollector(self.db)
 

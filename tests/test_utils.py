@@ -35,13 +35,15 @@ class TestDateUtils:
         """Test calculating days until future date"""
         future = datetime.utcnow() + timedelta(days=5)
         days = calculate_days_until(future)
-        assert days == 5
+        # Accept range due to timing and partial day truncation
+        assert 4 <= days <= 5
 
     def test_calculate_days_until_past(self):
         """Test calculating days until past date (negative)"""
         past = datetime.utcnow() - timedelta(days=3)
         days = calculate_days_until(past)
-        assert days == -3
+        # Accept range due to timing and partial day truncation
+        assert -4 <= days <= -3
 
     def test_is_deadline_approaching(self):
         """Test deadline approaching detection"""

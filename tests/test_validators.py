@@ -111,7 +111,8 @@ class TestPolicyValidator:
             policy_id="POL-001",
             policy_name="Test Policy",
             language="en",
-            content="This is a valid policy document with sufficient content to pass validation tests.",
+            content="This is a valid policy document with sufficient content to pass validation tests. "
+                    "Additional text added to meet the minimum character requirement of 100 characters.",
             version="1.0",
             effective_date=datetime.utcnow()
         )
