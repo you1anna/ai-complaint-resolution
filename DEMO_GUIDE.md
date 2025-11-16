@@ -31,7 +31,7 @@ Transform your complaint handling from 4+ hours to under 1 hour with AI!
 
 ## ⚡ Quick Start (5 Minutes)
 
-### Step 1: Setup (One-Time, 2 minutes)
+### Step 1: Setup (One-Time, 3 minutes)
 
 ```bash
 # 1. Get your Claude API key
@@ -45,11 +45,19 @@ cp .env.example .env
 # Edit .env file and replace:
 # ANTHROPIC_API_KEY=your_api_key_here
 # with your actual key
+
+# 4. Create virtual environment and install dependencies
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
 ```
 
 ### Step 2: Initialize Demo Data (1 minute)
 
 ```bash
+# Activate virtual environment (if not already active)
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
 # Load example complaints and policies
 python cli.py init
 ```
@@ -62,6 +70,9 @@ This creates 5 realistic complaints:
 ### Step 3: Run the Demo! (2 minutes)
 
 ```bash
+# Ensure virtual environment is active
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
 # View all complaints
 python cli.py list
 
@@ -295,12 +306,21 @@ python cli.py metrics --type savings
 
 ## 🚨 Troubleshooting
 
+**"command not found: python" or "ModuleNotFoundError"**
+- Make sure virtual environment is activated: `source venv/bin/activate`
+- If venv doesn't exist, create it: `python3 -m venv venv`
+- Install dependencies: `pip install -r requirements.txt`
+
 **"ANTHROPIC_API_KEY not set"**
 - Edit `.env` file
 - Add your API key from console.anthropic.com
 
 **"No complaints found"**
 - Run: `python cli.py init`
+
+**"Object of type datetime is not JSON serializable"**
+- This bug was fixed in `src/workflow.py` by changing `.dict()` to `.model_dump(mode='json')`
+- Update to latest version or apply the fix manually
 
 **Commands are slow**
 - Normal! AI analysis takes 30-90 seconds per complaint
@@ -309,6 +329,10 @@ python cli.py metrics --type savings
 **Demo freezes**
 - Check internet connection (needs to call Claude API)
 - Verify API key is valid
+
+**"Complaint already processed" error**
+- Complaint status changed to 'awaiting_review' after first processing
+- Use a different complaint ID or run `python cli.py init` to reset data
 
 ---
 

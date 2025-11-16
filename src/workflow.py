@@ -81,7 +81,7 @@ class ComplaintWorkflow:
             classification = self.classifier.classify_complaint(complaint)
             workflow_result["stages"]["classification"] = {
                 "completed_at": datetime.utcnow().isoformat(),
-                "result": classification.dict()
+                "result": classification.model_dump(mode='json')
             }
 
             # Update complaint with classification
@@ -96,7 +96,7 @@ class ComplaintWorkflow:
             )
             workflow_result["stages"]["policy_analysis"] = {
                 "completed_at": datetime.utcnow().isoformat(),
-                "result": policy_analysis.dict()
+                "result": policy_analysis.model_dump(mode='json')
             }
 
             # Stage 3: Response Generation
@@ -108,7 +108,7 @@ class ComplaintWorkflow:
             )
             workflow_result["stages"]["response_generation"] = {
                 "completed_at": datetime.utcnow().isoformat(),
-                "result": response_draft.dict()
+                "result": response_draft.model_dump(mode='json')
             }
 
             # Update complaint with draft response
