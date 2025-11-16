@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     """Application settings"""
     # API Configuration
     anthropic_api_key: str = os.getenv("ANTHROPIC_API_KEY", "")
-    claude_model: str = os.getenv("CLAUDE_MODEL", "claude-3-5-sonnet-20241022")
+    claude_model: str = os.getenv("CLAUDE_MODEL", "claude-sonnet-4-5-20250929")
 
     # Database
     database_url: str = os.getenv("DATABASE_URL", "sqlite:///./complaint_resolution.db")
