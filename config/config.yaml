@@ -1,0 +1,54 @@
+# AI Complaint Resolution System Configuration
+
+# Language support
+supported_languages:
+  - en  # English
+  - it  # Italian
+  - de  # German
+  - fr  # French
+  - es  # Spanish
+
+# Complaint categories
+complaint_categories:
+  - claim_rejection
+  - service_quality
+  - policy_interpretation
+  - medical_coverage
+  - trip_cancellation
+  - baggage_loss
+  - travel_delay
+  - communication_issue
+
+# Urgency indicators (for triage)
+urgency_indicators:
+  high:
+    - regulatory_deadline_approaching
+    - vulnerable_customer
+    - legal_threat
+    - media_involvement
+  medium:
+    - fos_escalation_risk
+    - repeated_complaint
+    - high_value_claim
+  low:
+    - standard_query
+    - information_request
+
+# SLA timelines (in days)
+sla_timelines:
+  international: 15
+  uk_domestic: 56
+
+# Human review requirements
+human_review:
+  always_review:
+    - high_urgency
+    - predicted_escalation
+    - policy_coverage_denial
+  confidence_threshold: 0.85  # Below this, always flag for review
+
+# Response templates
+response_tone:
+  empathetic: true
+  professional: true
+  fca_compliant: true
