@@ -1,7 +1,7 @@
-# 🚀 5-Minute Demo Guide
+# 🚀 Complete Demo Guide
 **AI-Powered Complaint Resolution System**
 
-Transform your complaint handling from 4+ hours to under 1 hour with AI!
+Transform complaint handling from 4+ hours to under 1 hour with AI!
 
 ---
 
@@ -31,112 +31,135 @@ Transform your complaint handling from 4+ hours to under 1 hour with AI!
 
 ## ⚡ Quick Start (5 Minutes)
 
-### Step 1: Setup (One-Time, 3 minutes)
+### Option A: Automated Import Demo (RECOMMENDED)
+
+**The fastest way to see the complete workflow:**
 
 ```bash
-# 1. Get your Claude API key
-# Visit: https://console.anthropic.com/
-# Copy your API key (starts with sk-ant-...)
+# 1. Setup (one-time)
+cp .env.example .env
+# Edit .env and add your ANTHROPIC_API_KEY
 
+# 2. Run the automated demo
+python scripts/demo_import_workflow.py
+```
+
+This demonstrates:
+1. ✅ Import complaint from unstructured file (PDF/DOCX/TXT)
+2. ✅ Automatic metadata extraction
+3. ✅ AI processing and analysis
+4. ✅ Draft response generation
+5. ✅ Time savings calculation
+
+**Takes ~2 minutes and shows the entire workflow!**
+
+---
+
+### Option B: Manual Step-by-Step Demo
+
+#### Step 1: Setup (One-Time, 2 minutes)
+
+```bash
+# 1. Get your Claude API key from: https://console.anthropic.com/
 # 2. Create configuration file
 cp .env.example .env
 
 # 3. Add your API key to .env
 # Edit .env file and replace:
 # ANTHROPIC_API_KEY=your_api_key_here
-# with your actual key
-
-# 4. Create virtual environment and install dependencies
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
 ```
 
-### Step 2: Initialize Demo Data (1 minute)
+#### Step 2: Choose Your Demo Path
 
+**Path 1: Import Demo (NEW - shows unstructured data input)**
 ```bash
-# Activate virtual environment (if not already active)
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Import a complaint from file
+python cli.py import complaint test_data/sample_complaint.txt
 
-# Load example complaints and policies
+# View imported complaints
+python cli.py list
+
+# Process the imported complaint (use ID from list)
+python cli.py process COMP-XXXXXXXX
+```
+
+**Path 2: Traditional Demo (pre-seeded data)**
+```bash
+# Load example complaints
 python cli.py init
-```
-
-This creates 5 realistic complaints:
-- 2 Italian complaints
-- 3 English complaints
-- Various types: claim rejections, baggage issues, delays
-
-### Step 3: Run the Demo! (2 minutes)
-
-```bash
-# Ensure virtual environment is active
-source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # View all complaints
 python cli.py list
 
-# Process a complaint with AI
+# Process a complaint
 python cli.py process COMP-2024-001
-
-# See the magic! ✨
-# AI will:
-# - Classify the complaint (category + urgency)
-# - Analyze the 50+ page policy
-# - Generate a professional Italian response
-# - Show time savings (3+ hours saved!)
 ```
 
 ---
 
-## 📺 Demo Script (For Presentations)
+## 📺 Presentation Script (For Stakeholder Demos)
 
 ### Introduction (30 seconds)
 
 > "Let me show you how AI transforms complaint handling at Collinson.
 > Currently, each complaint takes over 4 hours. With this system, we
-> reduce that to under 1 hour while improving quality."
+> reduce that to under 1 hour while improving quality.
+>
+> **NEW:** The system now accepts complaints directly from PDF, DOCX, or
+> text files - no manual data entry required."
 
-### Demo Part 1: The Problem (30 seconds)
+---
 
-```bash
-python cli.py list
-```
+### Demo Scenario 1: Import Workflow (3 minutes) ⭐ RECOMMENDED
 
-> "Here we have 5 real complaints. Let's look at COMP-2024-001 - an Italian
-> customer disputing a claim rejection for trip cancellation. Normally, a
-> handler would spend:
-> - 1.5 hours gathering data from 3 different systems
-> - 2.5 hours reading the 50-page Italian policy
-> - 45 minutes drafting an Italian response
-> Total: Over 4 hours."
-
-### Demo Part 2: The Solution (2 minutes)
+**Step 1: Show the Input (30 seconds)**
 
 ```bash
-python cli.py process COMP-2024-001
+# Show available test complaints
+ls -lh test_data/
 ```
 
-**Watch the AI work:**
+> "We have complaints in various formats - PDF, DOCX, plain text.
+> Let me import one now. No manual data entry needed."
 
-> "Watch what happens:
+**Step 2: Import the Complaint (30 seconds)**
+
+```bash
+python cli.py import complaint test_data/sample_complaint.txt
+```
+
+> "Watch as the system:
+> - Reads the document
+> - Extracts customer name, policy number, dates
+> - Detects the language (Italian customer)
+> - Creates a complaint record automatically
+>
+> **Before:** Handler would manually type this for 10-15 minutes
+> **Now:** 30 seconds, zero typing errors"
+
+**Step 3: Process with AI (2 minutes)**
+
+```bash
+# Get the complaint ID from import output
+python cli.py process COMP-XXXXXXXX
+```
+
+> "Now watch the AI work:
 >
 > [CLASSIFICATION appears]
-> - AI reads the complaint and classifies it
 > - Category: Trip Cancellation
 > - Urgency: High (mentioned legal action)
 > - Confidence: 92%
 >
 > [POLICY ANALYSIS appears]
-> - AI analyzes the entire 50-page policy in seconds
-> - Extracts relevant clauses about cancellation
-> - Checks exclusions
-> - Decision: COVERED (customer's father's unexpected heart attack qualifies)
+> - Analyzes entire 50-page policy in seconds
+> - Extracts relevant cancellation clauses
+> - Decision: COVERED (medical emergency qualifies)
+> - Confidence: 88%
 >
 > [RESPONSE GENERATION appears]
-> - AI drafts a professional response in Italian
-> - Empathetic tone
-> - FCA compliant
+> - Drafts professional response in customer's language
+> - Empathetic, FCA-compliant
 > - References specific policy sections
 >
 > [TIME SAVINGS appears]
@@ -144,10 +167,38 @@ python cli.py process COMP-2024-001
 > - AI-assisted time: 1.0 hours
 > - Time saved: 3.25 hours (76%)
 >
+> Total time from file to draft response: **Under 2 minutes**"
+
+---
+
+### Demo Scenario 2: Traditional Workflow (3 minutes)
+
+**Step 1: The Problem (30 seconds)**
+
+```bash
+python cli.py list
+```
+
+> "Here we have 5 real complaints. Let's look at COMP-2024-001 - an Italian
+> customer disputing a claim rejection. Normally, a handler would spend:
+> - 1.5 hours gathering data from systems
+> - 2.5 hours reading the 50-page Italian policy
+> - 45 minutes drafting an Italian response
+> **Total: Over 4 hours**"
+
+**Step 2: The Solution (2 minutes)**
+
+```bash
+python cli.py process COMP-2024-001
+```
+
+> "Watch the AI work:
+> [Same output as Scenario 1 - classification, policy analysis, response]
+>
 > And crucially - it's flagged for human review because of high urgency.
 > AI assists, humans decide."
 
-### Demo Part 3: Human Review (1 minute)
+**Step 3: Human Review (30 seconds)**
 
 ```bash
 python cli.py review COMP-2024-001 --reviewer "Demo"
@@ -156,16 +207,12 @@ python cli.py review COMP-2024-001 --reviewer "Demo"
 > "The handler reviews the AI's work:
 > - Sees the classification (makes sense)
 > - Reads the policy analysis (thorough and accurate)
-> - Reviews the Italian response (professional and compliant)
+> - Reviews the response (professional and compliant)
 >
-> They can:
-> - Approve as-is
-> - Make modifications
-> - Reject if incorrect
->
-> This maintains human oversight while eliminating the tedious work."
+> They can approve, modify, or reject. This maintains human oversight
+> while eliminating tedious work."
 
-### Demo Part 4: Results (30 seconds)
+**Step 4: Results (30 seconds)**
 
 ```bash
 python cli.py metrics
@@ -175,65 +222,100 @@ python cli.py metrics
 > - Time saved per complaint: 3+ hours
 > - Cost savings: £255 per complaint
 > - Across 100 monthly complaints: £25K savings/month
-> - That's £300K per year
->
-> Plus: handlers focus on judgment and relationships, not data gathering."
+> - That's £300K per year"
 
 ---
 
-## 💡 Key Demo Talking Points
+## 🎯 Sample Complaints for Demo
+
+### Import Demo Samples (test_data/)
+
+| File | Customer | Language | Type | Best For |
+|------|----------|----------|------|----------|
+| **sample_complaint.txt** | Maria Rossi | Italian | Medical cancellation | ⭐ **BEST** - Shows extraction, multilingual |
+| **complaint_baggage_loss.txt** | Hans Mueller | German | Lost baggage | Good - Professional equipment dispute |
+| **complaint_cancellation.txt** | Sophie Dubois | French | Family emergency | Good - Shows French language handling |
+
+### Pre-Seeded Samples (python cli.py init)
+
+| ID | Customer | Language | Type | Best For |
+|----|----------|----------|------|----------|
+| **COMP-2024-001** | Marco Rossi | Italian | Trip cancellation | ⭐ **BEST** - High value, policy analysis |
+| COMP-2024-002 | Sarah Williams | English | Baggage dispute | Good - Limit enforcement |
+| COMP-2024-003 | Giovanni Bianchi | Italian | Flight delay | Good - Straightforward |
+| COMP-2024-004 | Emma Thompson | English | Medical expenses | Good - Edge case |
+| COMP-2024-005 | Lucia Ferrari | Italian | Cancellation | Good - Employment verification |
+
+---
+
+## 💡 Key Talking Points by Audience
 
 ### For Executives
 - **ROI:** 4-6 month payback period
 - **Scalability:** Handle 3-4x more volume with same team
 - **Cost Savings:** £216K-£252K annually
 - **Compliance:** Meets 15-day regulatory deadlines consistently
+- **NEW:** Zero manual data entry - import directly from files
 
 ### For Operations Managers
 - **Team Wellbeing:** Reduces burnout from tedious tasks
 - **Quality:** Error rate drops from 11.7% to <5%
 - **Consistency:** Standardized analysis and responses
 - **Audit Trail:** Complete record of all decisions
+- **NEW:** Batch import capabilities for backlog processing
 
 ### For Handlers
 - **Time Back:** 3+ hours saved per complaint
 - **Focus on Value:** Spend time on judgment, not data entry
 - **Learning:** AI shows thorough policy analysis
 - **Control:** Final approval always with human
+- **NEW:** No more typing complaint details from emails
 
 ### For Compliance/Legal
 - **FCA Compliant:** All responses follow regulations
 - **Audit Trail:** Complete documentation
 - **Consistency:** Reduces regulatory risk
 - **Explainable:** AI shows reasoning for decisions
+- **NEW:** Metadata preservation from source documents
 
 ---
 
-## 🎯 Demo Commands Cheat Sheet
+## 🎯 Complete Command Reference
 
+### Import Commands (NEW)
 ```bash
-# List all complaints
+# Import complaint from file
+python cli.py import complaint <file.pdf|docx|txt>
+
+# With overrides if auto-extraction fails
+python cli.py import complaint file.pdf --policy-number POL123456
+
+# Import policy document
+python cli.py import policy policy.pdf --policy-id POL001 --language en
+
+# Run automated import demo
+python scripts/demo_import_workflow.py
+```
+
+### Traditional Commands
+```bash
+# Initialize with sample data
+python cli.py init
+
+# List complaints
 python cli.py list
-
-# Filter by status
 python cli.py list --status new
-
-# Filter by urgency
 python cli.py list --urgency high
 
-# Process a complaint
+# Process complaint
 python cli.py process COMP-2024-001
-
-# Process and save results to file
 python cli.py process COMP-2024-001 --save
 
-# Review a complaint
+# Review complaint
 python cli.py review COMP-2024-001 --reviewer "Your Name"
 
 # View metrics
 python cli.py metrics
-
-# View specific metrics
 python cli.py metrics --type savings
 python cli.py metrics --type quality
 python cli.py metrics --type sla
@@ -244,30 +326,22 @@ python cli.py validate
 
 ---
 
-## 📊 Sample Complaints for Demo
-
-| ID | Customer | Language | Type | Best For Demo |
-|----|----------|----------|------|---------------|
-| **COMP-2024-001** | Marco Rossi | Italian | Claim rejection - trip cancellation | ⭐ **BEST** - Shows multilingual, policy analysis, high value |
-| COMP-2024-002 | Sarah Williams | English | Baggage claim dispute | Good - Shows limit enforcement |
-| COMP-2024-003 | Giovanni Bianchi | Italian | Flight delay payment | Good - Straightforward case |
-| COMP-2024-004 | Emma Thompson | English | Medical expenses - allergies | Good - Shows edge case handling |
-| COMP-2024-005 | Lucia Ferrari | Italian | Cancellation - redundancy | Good - Shows employment verification |
-
-**Recommended:** Start with COMP-2024-001 (most impressive)
-
----
-
 ## ❓ Common Questions During Demo
 
 **Q: Does AI replace the handlers?**
-A: No. AI handles the tedious analysis, handlers make the final decisions. It's augmentation, not replacement.
+A: No. AI handles the tedious analysis, handlers make final decisions. It's augmentation, not replacement.
 
 **Q: What if the AI makes a mistake?**
-A: Every case is flagged for human review. High-risk cases are always reviewed. Handlers have final approval.
+A: Every case is flagged for human review. High-risk cases always reviewed. Handlers have final approval.
 
 **Q: Can it handle different languages?**
-A: Yes. Currently supports English, Italian, German, French, Spanish. Easily expandable.
+A: Yes. Supports English, Italian, German, French, Spanish. Auto-detects language from imported files.
+
+**Q: What file formats are supported?**
+A: PDF, DOCX (Microsoft Word), and plain text files. More formats can be added easily.
+
+**Q: Can it extract data from scanned PDFs?**
+A: Currently text-based PDFs. OCR capability can be added for scanned documents.
 
 **Q: Is it secure?**
 A: Yes. All data is local (SQLite). API calls to Claude are encrypted. No PII stored in cloud.
@@ -279,48 +353,26 @@ A: MVP ready now. Full integration with iCaseWork/GoTrex/Hepstar: 2-3 months.
 A: Fully compliant. Data stays in your control. API calls don't train Claude's models.
 
 **Q: What's the accuracy?**
-A: 90%+ on classification. Policy analysis flagged for review when uncertain. Error rate <5%.
-
----
-
-## 🎬 Alternative Demo: Batch Processing
-
-Show power with multiple complaints:
-
-```bash
-# Show all new complaints
-python cli.py list --status new
-
-# Process multiple (in separate terminal windows for effect)
-python cli.py process COMP-2024-001
-python cli.py process COMP-2024-002
-python cli.py process COMP-2024-003
-
-# Show metrics after processing
-python cli.py metrics --type savings
-```
-
-**Talking point:** "Imagine processing your weekly backlog in 2 hours instead of 2 days."
+A: 90%+ on classification. 85%+ on policy analysis. Flagged for review when uncertain. Error rate <5%.
 
 ---
 
 ## 🚨 Troubleshooting
-
-**"command not found: python" or "ModuleNotFoundError"**
-- Make sure virtual environment is activated: `source venv/bin/activate`
-- If venv doesn't exist, create it: `python3 -m venv venv`
-- Install dependencies: `pip install -r requirements.txt`
 
 **"ANTHROPIC_API_KEY not set"**
 - Edit `.env` file
 - Add your API key from console.anthropic.com
 
 **"No complaints found"**
-- Run: `python cli.py init`
+- Run: `python cli.py init` (for seeded data)
+- Or import a file: `python cli.py import complaint test_data/sample_complaint.txt`
 
-**"Object of type datetime is not JSON serializable"**
-- This bug was fixed in `src/workflow.py` by changing `.dict()` to `.model_dump(mode='json')`
-- Update to latest version or apply the fix manually
+**"Policy number is required but could not be extracted"**
+- Provide it manually: `--policy-number POL123456`
+
+**"Failed to parse file"**
+- Check file format is PDF, DOCX, or TXT
+- Install dependencies: `pip install python-docx pypdf`
 
 **Commands are slow**
 - Normal! AI analysis takes 30-90 seconds per complaint
@@ -329,10 +381,6 @@ python cli.py metrics --type savings
 **Demo freezes**
 - Check internet connection (needs to call Claude API)
 - Verify API key is valid
-
-**"Complaint already processed" error**
-- Complaint status changed to 'awaiting_review' after first processing
-- Use a different complaint ID or run `python cli.py init` to reset data
 
 ---
 
@@ -348,44 +396,72 @@ python cli.py metrics
 - **Time Saved:** 3+ hours per complaint
 - **Cost Savings:** £255 per complaint
 - **Quality:** Confidence scores averaging 90%+
+- **Accuracy:** <5% error rate
+- **Import Success:** 100% of valid files processed
 
 ---
 
-## 🎁 Bonus: Live Customization
+## 🎬 Advanced Demo: Batch Import
 
-To really impress, show customization:
+Show power with multiple files:
 
 ```bash
-# Create a new complaint on the fly
-python -c "
-from src.models import Complaint, ComplaintStatus
-from src.database import Database
-from datetime import datetime, timedelta
+# Import multiple complaints
+python cli.py import complaint test_data/sample_complaint.txt
+python cli.py import complaint test_data/complaint_baggage_loss.txt
+python cli.py import complaint test_data/complaint_cancellation.txt
 
-db = Database()
-complaint = Complaint(
-    complaint_id='DEMO-LIVE',
-    customer_name='Live Demo Customer',
-    customer_language='en',
-    policy_number='EASY-UK-2024-001',
-    complaint_text='Your custom complaint text here...',
-    received_date=datetime.utcnow(),
-    deadline_date=datetime.utcnow() + timedelta(days=15),
-    status=ComplaintStatus.NEW
-)
-db.save_complaint(complaint)
-print('✅ Created custom complaint!')
-"
+# View all imported
+python cli.py list --status new
 
-# Then process it
-python cli.py process DEMO-LIVE
+# Process them all
+python cli.py process <id1>
+python cli.py process <id2>
+python cli.py process <id3>
+
+# Show aggregate savings
+python cli.py metrics --type savings
+```
+
+**Talking point:** "Imagine processing your weekly backlog from a folder of PDF complaints in minutes, not days."
+
+---
+
+## 📋 Pre-Demo Checklist
+
+- [ ] API key configured in `.env`
+- [ ] Dependencies installed: `pip install -r requirements.txt`
+- [ ] Test data available in `test_data/`
+- [ ] Internet connection working
+- [ ] Demo script practiced once
+- [ ] Backup plan: Have `python cli.py init` ready if import demo fails
+
+---
+
+## 🎁 Bonus: Custom Complaint Demo
+
+To really impress, create a custom complaint on the fly:
+
+```bash
+# Option 1: Create a text file with their example
+echo "Customer: John Smith
+Policy: POL-DEMO-001
+Date: 2024-11-16
+
+[Your custom complaint text here...]" > custom_complaint.txt
+
+# Import and process it
+python cli.py import complaint custom_complaint.txt --policy-number POL-DEMO-001
+python cli.py process <generated-id>
 ```
 
 ---
 
 **Ready to transform complaint handling? Let's run the demo!** 🚀
 
-For questions or setup help, see:
-- `README.md` - Full documentation
-- `docs/TROUBLESHOOTING.md` - Common issues
-- `docs/QA_REPORT.md` - Testing results
+**For more information:**
+- `README.md` - Complete system documentation
+- `REQUIREMENTS.md` - Full functional requirements (all phases)
+- `docs/TROUBLESHOOTING.md` - Detailed troubleshooting guide
+- `docs/API.md` - API documentation for developers
+- `test_data/README.md` - Import testing guide
