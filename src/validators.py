@@ -3,7 +3,7 @@ Validation utilities for complaint resolution system
 Ensures data quality and business rule compliance
 """
 import logging
-from typing import List, Optional, Tuple
+# Modern Python 3.9+ uses lowercase built-in types instead of typing module
 from datetime import datetime, timedelta
 
 from .models import Complaint, PolicyDocument, ComplaintStatus
@@ -21,7 +21,7 @@ class ComplaintValidator:
     """Validates complaint data and business rules"""
 
     @staticmethod
-    def validate_complaint(complaint: Complaint) -> Tuple[bool, List[str]]:
+    def validate_complaint(complaint: Complaint) -> tuple[bool, list[str]]:
         """
         Validate complaint data
 
@@ -72,7 +72,7 @@ class ComplaintValidator:
         return len(errors) == 0, errors
 
     @staticmethod
-    def validate_sla_compliance(complaint: Complaint) -> Tuple[bool, str]:
+    def validate_sla_compliance(complaint: Complaint) -> tuple[bool, str]:
         """
         Check if complaint is within SLA timelines
 
@@ -96,7 +96,7 @@ class ComplaintValidator:
         return True, f"On track: {days_until_deadline} days until deadline"
 
     @staticmethod
-    def validate_for_processing(complaint: Complaint) -> Tuple[bool, List[str]]:
+    def validate_for_processing(complaint: Complaint) -> tuple[bool, list[str]]:
         """
         Validate that complaint is ready for AI processing
 
@@ -131,7 +131,7 @@ class PolicyValidator:
     """Validates policy document data"""
 
     @staticmethod
-    def validate_policy(policy: PolicyDocument) -> Tuple[bool, List[str]]:
+    def validate_policy(policy: PolicyDocument) -> tuple[bool, list[str]]:
         """
         Validate policy document data
 
@@ -174,7 +174,7 @@ class PolicyValidator:
         return len(errors) == 0, errors
 
     @staticmethod
-    def check_policy_currency(policy: PolicyDocument, max_age_days: int = 1825) -> Tuple[bool, str]:
+    def check_policy_currency(policy: PolicyDocument, max_age_days: int = 1825) -> tuple[bool, str]:
         """
         Check if policy is current (not too old)
 
@@ -200,7 +200,7 @@ class WorkflowValidator:
     """Validates workflow operations"""
 
     @staticmethod
-    def validate_for_review(complaint: Complaint) -> Tuple[bool, List[str]]:
+    def validate_for_review(complaint: Complaint) -> tuple[bool, list[str]]:
         """
         Validate that complaint is ready for human review
 
@@ -233,7 +233,7 @@ class WorkflowValidator:
         return len(blockers) == 0, blockers
 
     @staticmethod
-    def validate_for_approval(complaint: Complaint, reviewer_name: str) -> Tuple[bool, List[str]]:
+    def validate_for_approval(complaint: Complaint, reviewer_name: str) -> tuple[bool, list[str]]:
         """
         Validate approval operation
 
@@ -258,7 +258,7 @@ class WorkflowValidator:
         return len(errors) == 0, errors
 
 
-def validate_confidence_score(score: float, threshold: float = 0.85) -> Tuple[bool, str]:
+def validate_confidence_score(score: float, threshold: float = 0.85) -> tuple[bool, str]:
     """
     Validate confidence score against threshold
 
@@ -278,7 +278,7 @@ def validate_confidence_score(score: float, threshold: float = 0.85) -> Tuple[bo
     return True, f"Confidence score {score:.2%} meets threshold"
 
 
-def validate_api_configuration() -> Tuple[bool, List[str]]:
+def validate_api_configuration() -> tuple[bool, list[str]]:
     """
     Validate that API configuration is correct
 

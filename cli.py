@@ -96,7 +96,8 @@ class CLI:
 
     def cmd_list(self, args):
         """List complaints"""
-        # Only initialize database, not workflow (doesn't need API key)
+        # Only initialize database, not workflow.
+        # Database-only operations don't require workflow initialization or API key validation.
         if not self.db:
             self.db = Database()
 
@@ -265,7 +266,8 @@ class CLI:
 
     def cmd_metrics(self, args):
         """Display system metrics"""
-        # Only initialize database, not workflow
+        # Only initialize database, not workflow.
+        # Database-only operations don't require workflow initialization or API key validation.
         if not self.db:
             self.db = Database()
 

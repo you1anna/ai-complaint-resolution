@@ -3,7 +3,7 @@ Complaint Resolution Workflow - Orchestrates the end-to-end complaint handling p
 Implements human-in-the-loop workflow: AI analyzes, human approves
 """
 import logging
-from typing import Optional, Dict, List
+from typing import Optional  # Modern Python 3.9+ uses lowercase built-in types for dict, list, etc.
 from datetime import datetime
 from enum import Enum
 
@@ -173,12 +173,12 @@ class ComplaintWorkflow:
         complaint: Complaint,
         classification: ClassificationResult,
         policy_analysis: PolicyAnalysisResult
-    ) -> tuple[bool, List[str]]:
+    ) -> tuple[bool, list[str]]:
         """
         Determine if a complaint requires human review
 
         Returns:
-            Tuple of (requires_review: bool, reasons: List[str])
+            tuple of (requires_review: bool, reasons: list[str])
         """
         reasons = []
 
@@ -280,9 +280,9 @@ class ComplaintWorkflow:
 
     def batch_process(
         self,
-        complaints: List[Complaint],
-        policies: Dict[str, PolicyDocument]
-    ) -> List[Dict]:
+        complaints: list[Complaint],
+        policies: dict[str, PolicyDocument]
+    ) -> list[dict]:
         """
         Process multiple complaints in batch
 
