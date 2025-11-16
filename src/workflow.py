@@ -52,7 +52,7 @@ class ComplaintWorkflow:
         complaint: Complaint,
         policy: PolicyDocument,
         auto_approve: bool = False
-    ) -> Dict:
+    ) -> dict:
         """
         Process a complaint through the complete workflow
 
