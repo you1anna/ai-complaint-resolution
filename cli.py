@@ -330,6 +330,105 @@ class CLI:
 
         return 0 if is_valid else 1
 
+    def cmd_import(self, args):
+        """Import complaint or policy from file"""
+        # Only initialize database, not workflow
+        if not self.db:
+            self.db = Database()
+
+        from pathlib import Path
+        import json
+
+        file_path = Path(args.file)
+        if not file_path.exists():
+            print(f"\n❌ File not found: {file_path}")
+            return 1
+
+        print("\n" + "=" * 80)
+        print(f"  Importing {args.type.upper()} from file")
+        print("=" * 80)
+        print(f"\n📄 File: {file_path.name}")
+        print(f"   Size: {file_path.stat().st_size:,} bytes")
+        print(f"   Type: {file_path.suffix}")
+
+        try:
+            if args.type == 'complaint':
+                # Build overrides dictionary from args
+                overrides = {}
+                if args.complaint_id:
+                    overrides['complaint_id'] = args.complaint_id
+                if args.customer_name:
+                    overrides['customer_name'] = args.customer_name
+                if args.policy_number:
+                    overrides['policy_number'] = args.policy_number
+                if args.language:
+                    overrides['customer_language'] = args.language
+
+                print("\n⏳ Parsing document and extracting complaint data...")
+                complaint = self.db.import_complaint_from_file(file_path, **overrides)
+
+                print("\n✅ Complaint imported successfully!")
+                print(f"\n📋 Complaint Details:")
+                print(f"   ID: {complaint.complaint_id}")
+                print(f"   Customer: {complaint.customer_name}")
+                print(f"   Policy: {complaint.policy_number}")
+                print(f"   Language: {complaint.customer_language}")
+                print(f"   Received: {complaint.received_date.strftime('%Y-%m-%d')}")
+                print(f"   Deadline: {complaint.deadline_date.strftime('%Y-%m-%d')}")
+                print(f"\n📝 Complaint Text Preview:")
+                print("   " + complaint.complaint_text[:200].replace('\n', '\n   ') + "...")
+
+                print(f"\n💡 Next Steps:")
+                print(f"   - Process complaint: python cli.py process {complaint.complaint_id}")
+                print(f"   - View all complaints: python cli.py list")
+
+            elif args.type == 'policy':
+                # Build metadata dictionary from args
+                if not args.policy_id:
+                    print("\n❌ Error: --policy-id is required for policy import")
+                    return 1
+
+                metadata = {
+                    'policy_id': args.policy_id,
+                    'policy_name': args.policy_name,
+                    'language': args.language or 'en',
+                    'version': args.version or '1.0'
+                }
+
+                if args.effective_date:
+                    metadata['effective_date'] = args.effective_date
+
+                print("\n⏳ Parsing policy document...")
+                policy = self.db.import_policy_from_file(file_path, **metadata)
+
+                print("\n✅ Policy imported successfully!")
+                print(f"\n📄 Policy Details:")
+                print(f"   ID: {policy.policy_id}")
+                print(f"   Name: {policy.policy_name}")
+                print(f"   Language: {policy.language}")
+                print(f"   Version: {policy.version}")
+                print(f"   Effective: {policy.effective_date.strftime('%Y-%m-%d')}")
+                print(f"   Content: {len(policy.content):,} characters")
+
+                print(f"\n💡 Next Steps:")
+                print(f"   - View all policies: python cli.py list")
+                print(f"   - Process complaints using this policy")
+
+            return 0
+
+        except ValueError as e:
+            print(f"\n❌ Import Error: {str(e)}")
+            if args.type == 'complaint' and 'policy number' in str(e).lower():
+                print("\n💡 Tip: If the policy number couldn't be extracted, provide it manually:")
+                print(f"   python cli.py import complaint {file_path} --policy-number POL123456")
+            return 1
+        except Exception as e:
+            print(f"\n❌ Unexpected Error: {str(e)}")
+            import traceback
+            if args.verbose:
+                traceback.print_exc()
+            return 1
+
     def _display_workflow_results(self, result):
         """Display workflow results"""
         print("\n" + "=" * 80)
@@ -374,13 +473,16 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python cli.py init                          # Initialize and seed database
-  python cli.py list                          # List all complaints
-  python cli.py list --status new             # List new complaints
-  python cli.py process COMP-2024-001         # Process a complaint
-  python cli.py review COMP-2024-001          # Review a complaint
-  python cli.py metrics                       # View summary metrics
-  python cli.py validate                      # Validate configuration
+  python cli.py init                                        # Initialize and seed database
+  python cli.py list                                        # List all complaints
+  python cli.py list --status new                           # List new complaints
+  python cli.py import complaint complaint.pdf              # Import complaint from PDF
+  python cli.py import complaint complaint.docx --policy-number POL123  # Import with policy override
+  python cli.py import policy policy.pdf --policy-id POL001 # Import policy document
+  python cli.py process COMP-2024-001                       # Process a complaint
+  python cli.py review COMP-2024-001                        # Review a complaint
+  python cli.py metrics                                     # View summary metrics
+  python cli.py validate                                    # Validate configuration
         """
     )
 
@@ -412,6 +514,26 @@ Examples:
 
     # Validate command
     subparsers.add_parser('validate', help='Validate system configuration')
+
+    # Import command
+    import_parser = subparsers.add_parser('import', help='Import complaint or policy from file (PDF/DOCX)')
+    import_parser.add_argument('type', choices=['complaint', 'policy'], help='Type of data to import')
+    import_parser.add_argument('file', help='Path to file (PDF, DOCX, or TXT)')
+
+    # Complaint-specific options
+    import_parser.add_argument('--complaint-id', help='Override complaint ID')
+    import_parser.add_argument('--customer-name', help='Override customer name')
+    import_parser.add_argument('--policy-number', help='Override or specify policy number')
+    import_parser.add_argument('--language', choices=['en', 'it', 'de', 'fr', 'es'], help='Override customer language')
+
+    # Policy-specific options
+    import_parser.add_argument('--policy-id', help='Policy ID (required for policy import)')
+    import_parser.add_argument('--policy-name', help='Policy name')
+    import_parser.add_argument('--version', help='Policy version (default: 1.0)')
+    import_parser.add_argument('--effective-date', help='Effective date (YYYY-MM-DD)')
+
+    # General options
+    import_parser.add_argument('--verbose', action='store_true', help='Show detailed error messages')
 
     args = parser.parse_args()
 

@@ -4,10 +4,11 @@ Simple SQLite-based storage for MVP
 """
 import json
 import logging
-from typing import List, Optional
-from datetime import datetime
+from typing import List, Optional, Dict, Any
+from datetime import datetime, timedelta
 from pathlib import Path
 import sqlite3
+import uuid
 
 from .models import Complaint, PolicyDocument, ComplaintStatus
 from .config import settings
@@ -255,6 +256,157 @@ class Database:
             exclusions=json.loads(row["exclusions"]) if row["exclusions"] else None,
             key_clauses=json.loads(row["key_clauses"]) if row["key_clauses"] else None
         )
+
+    def import_complaint_from_file(self, file_path: str | Path, **overrides) -> Complaint:
+        """
+        Import complaint from a document file (PDF, DOCX, TXT).
+
+        Args:
+            file_path: Path to document file
+            **overrides: Optional fields to override extracted values
+
+        Returns:
+            Created Complaint object
+
+        Raises:
+            ValueError: If file cannot be parsed or required fields are missing
+        """
+        from .document_parser import extract_complaint_from_file
+        from .models import ComplaintCategory, UrgencyLevel
+
+        # Parse the document
+        try:
+            extracted_data = extract_complaint_from_file(file_path)
+        except Exception as e:
+            logger.error(f"Failed to parse file {file_path}: {e}")
+            raise ValueError(f"Failed to parse file: {e}")
+
+        # Generate complaint ID if not provided
+        complaint_id = overrides.get('complaint_id') or extracted_data.get('complaint_id') or f"COMP-{uuid.uuid4().hex[:8].upper()}"
+
+        # Extract or use provided values
+        customer_name = overrides.get('customer_name') or extracted_data.get('customer_name') or "Unknown Customer"
+        customer_language = overrides.get('customer_language') or extracted_data.get('customer_language') or 'en'
+        policy_number = overrides.get('policy_number') or extracted_data.get('policy_number')
+        complaint_text = overrides.get('complaint_text') or extracted_data.get('complaint_text')
+
+        # Validate required fields
+        if not policy_number:
+            raise ValueError("Policy number is required but could not be extracted from the file. Please provide it manually.")
+        if not complaint_text:
+            raise ValueError("Complaint text could not be extracted from the file.")
+
+        # Parse or generate dates
+        if 'received_date' in overrides:
+            if isinstance(overrides['received_date'], str):
+                received_date = datetime.fromisoformat(overrides['received_date'])
+            else:
+                received_date = overrides['received_date']
+        elif extracted_data.get('date_received'):
+            try:
+                # Try to parse the extracted date
+                date_str = extracted_data['date_received']
+                # Handle various date formats
+                for fmt in ['%Y-%m-%d', '%d/%m/%Y', '%d-%m-%Y', '%m/%d/%Y']:
+                    try:
+                        received_date = datetime.strptime(date_str, fmt)
+                        break
+                    except ValueError:
+                        continue
+                else:
+                    received_date = datetime.now()
+            except Exception:
+                received_date = datetime.now()
+        else:
+            received_date = datetime.now()
+
+        # Calculate deadline (15 days from received date per requirements)
+        if 'deadline_date' in overrides:
+            if isinstance(overrides['deadline_date'], str):
+                deadline_date = datetime.fromisoformat(overrides['deadline_date'])
+            else:
+                deadline_date = overrides['deadline_date']
+        else:
+            deadline_date = received_date + timedelta(days=15)
+
+        # Create complaint object
+        complaint = Complaint(
+            complaint_id=complaint_id,
+            customer_name=customer_name,
+            customer_language=customer_language,
+            policy_number=policy_number,
+            claim_reference=overrides.get('claim_reference'),
+            complaint_text=complaint_text,
+            received_date=received_date,
+            deadline_date=deadline_date,
+            status=ComplaintStatus.NEW
+        )
+
+        # Save to database
+        self.save_complaint(complaint)
+
+        logger.info(f"Imported complaint {complaint_id} from file {file_path}")
+        return complaint
+
+    def import_policy_from_file(self, file_path: str | Path, **metadata) -> PolicyDocument:
+        """
+        Import policy document from a file (PDF, DOCX, TXT).
+
+        Args:
+            file_path: Path to document file
+            **metadata: Required metadata (policy_id, policy_name, language, version, effective_date)
+
+        Returns:
+            Created PolicyDocument object
+
+        Raises:
+            ValueError: If file cannot be parsed or required metadata is missing
+        """
+        from .document_parser import parse_document
+
+        # Parse the document
+        try:
+            parsed_doc = parse_document(file_path)
+        except Exception as e:
+            logger.error(f"Failed to parse file {file_path}: {e}")
+            raise ValueError(f"Failed to parse file: {e}")
+
+        # Extract required metadata
+        policy_id = metadata.get('policy_id')
+        policy_name = metadata.get('policy_name') or parsed_doc.metadata.title or Path(file_path).stem
+        language = metadata.get('language', 'en')
+        version = metadata.get('version', '1.0')
+
+        if not policy_id:
+            raise ValueError("Policy ID is required. Please provide it in metadata.")
+
+        # Parse effective date
+        if 'effective_date' in metadata:
+            if isinstance(metadata['effective_date'], str):
+                effective_date = datetime.fromisoformat(metadata['effective_date'])
+            else:
+                effective_date = metadata['effective_date']
+        else:
+            effective_date = datetime.now()
+
+        # Create policy object
+        policy = PolicyDocument(
+            policy_id=policy_id,
+            policy_name=policy_name,
+            language=language,
+            content=parsed_doc.text,
+            version=version,
+            effective_date=effective_date,
+            coverage_terms=metadata.get('coverage_terms'),
+            exclusions=metadata.get('exclusions'),
+            key_clauses=metadata.get('key_clauses')
+        )
+
+        # Save to database
+        self.save_policy(policy)
+
+        logger.info(f"Imported policy {policy_id} from file {file_path}")
+        return policy
 
     def close(self):
         """Close database connection"""

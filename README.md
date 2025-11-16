@@ -43,6 +43,12 @@ This MVP addresses the core challenges faced by Collinson's Customer Relations t
 
 ### Core Capabilities
 
+- **📄 Unstructured Data Input (NEW)**
+  - Import complaints from PDF, DOCX, or TXT files
+  - Automatic extraction of complaint details and metadata
+  - Import policy documents from various formats
+  - Smart field detection and language auto-detection
+
 - **🤖 AI-Powered Policy Analysis**
   - Parses 50+ page multilingual policy documents
   - Extracts relevant terms, exclusions, and coverage decisions
@@ -287,6 +293,15 @@ python cli.py list
 python cli.py list --status new
 python cli.py list --urgency high
 
+# Import complaints from files (NEW - supports PDF, DOCX, TXT)
+python cli.py import complaint complaint.pdf
+python cli.py import complaint complaint.docx --policy-number POL123456
+python cli.py import complaint complaint.txt --customer-name "John Smith" --language en
+
+# Import policy documents from files (NEW)
+python cli.py import policy policy.pdf --policy-id POL-EASY-2024 --policy-name "easyJet Policy"
+python cli.py import policy policy.docx --policy-id POL001 --language it --version "2.1"
+
 # Process a complaint
 python cli.py process COMP-2024-001
 python cli.py process COMP-2024-001 --save  # Save results to JSON
@@ -304,6 +319,40 @@ python cli.py metrics --type sla         # SLA compliance
 # Validate configuration
 python cli.py validate
 ```
+
+### Import Command Options
+
+**Complaint Import:**
+```bash
+python cli.py import complaint <file> [options]
+
+Options:
+  --complaint-id      Override/specify complaint ID
+  --customer-name     Override/specify customer name
+  --policy-number     Override/specify policy number (recommended if not in file)
+  --language          Override customer language (en, it, de, fr, es)
+  --verbose           Show detailed error messages
+```
+
+**Policy Import:**
+```bash
+python cli.py import policy <file> [options]
+
+Required:
+  --policy-id         Policy ID (required)
+
+Optional:
+  --policy-name       Policy name
+  --language          Policy language (default: en)
+  --version           Policy version (default: 1.0)
+  --effective-date    Effective date (YYYY-MM-DD)
+  --verbose           Show detailed error messages
+```
+
+**Supported File Formats:**
+- PDF (`.pdf`) - Best for scanned documents and policy documents
+- DOCX (`.docx`) - Microsoft Word documents
+- TXT (`.txt`) - Plain text files
 
 ### Makefile Shortcuts
 
@@ -328,6 +377,7 @@ ai-complaint-resolution/
 │   ├── config.py                 # Configuration management
 │   ├── models.py                 # Data models (Pydantic)
 │   ├── database.py               # SQLite database operations
+│   ├── document_parser.py        # NEW: Document parsing (PDF/DOCX/TXT)
 │   ├── policy_analyzer.py        # AI policy analysis
 │   ├── complaint_classifier.py   # Complaint categorization
 │   ├── response_generator.py     # Response drafting
@@ -344,7 +394,13 @@ ai-complaint-resolution/
 ├── data/                         # Data directory (created at runtime)
 │   └── complaint_resolution.db   # SQLite database
 │
+├── test_data/                    # NEW: Sample files for testing import
+│   ├── README.md                 # Import testing guide
+│   └── sample_complaint.txt      # Sample complaint for testing
+│
 ├── tests/                        # Unit tests (future)
+│
+├── REQUIREMENTS.md               # NEW: Comprehensive functional requirements
 │
 ├── .env.example                  # Environment template
 ├── .gitignore
