@@ -4,16 +4,63 @@ This directory contains sample files for testing the document import functionali
 
 ## Sample Files
 
-### `sample_complaint.txt`
-A sample complaint letter in text format that can be used to test the complaint import feature.
+### 1. `sample_complaint.txt`
+**Scenario:** Medical trip cancellation (Italian customer)
+- **Customer:** Maria Rossi
+- **Policy:** EJ-2024-987654
+- **Issue:** Claim denied due to alleged pre-existing condition
+- **Language:** English text, Italian customer
 
 **Usage:**
 ```bash
-# Import the sample complaint
+python cli.py import complaint test_data/sample_complaint.txt
+```
+
+### 2. `complaint_baggage_loss.txt`
+**Scenario:** Lost baggage with professional equipment (German customer)
+- **Customer:** Hans Mueller
+- **Policy:** EJ-2024-DEU-445566
+- **Issue:** Professional camera equipment loss claim denied
+- **Language:** English text, German customer
+
+**Usage:**
+```bash
+python cli.py import complaint test_data/complaint_baggage_loss.txt
+```
+
+### 3. `complaint_cancellation.txt`
+**Scenario:** Trip cancellation due to family emergency (French customer)
+- **Customer:** Sophie Dubois
+- **Policy:** EJ-2024-FRA-778899
+- **Issue:** Cancellation claim denied for mother's hospitalization
+- **Language:** French text and customer
+
+**Usage:**
+```bash
+python cli.py import complaint test_data/complaint_cancellation.txt
+```
+
+## Quick Demo
+
+### Import All Sample Complaints
+```bash
+# Import scenario 1 (medical)
 python cli.py import complaint test_data/sample_complaint.txt
 
-# Or with manual policy number override
-python cli.py import complaint test_data/sample_complaint.txt --policy-number EJ-2024-987654
+# Import scenario 2 (baggage)
+python cli.py import complaint test_data/complaint_baggage_loss.txt
+
+# Import scenario 3 (cancellation - French)
+python cli.py import complaint test_data/complaint_cancellation.txt
+
+# View all imported
+python cli.py list
+```
+
+### Automated Demo
+```bash
+# Run complete workflow demo
+python scripts/demo_import_workflow.py
 ```
 
 ## Creating Your Own Test Files

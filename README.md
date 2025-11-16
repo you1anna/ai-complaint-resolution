@@ -199,6 +199,24 @@ python scripts/process_complaint.py COMP-2024-001
 
 ## 📖 Usage Examples
 
+### NEW: Complete Import Workflow Demo
+
+**Quick demo of the new import feature (2 minutes):**
+
+```bash
+# Run automated import workflow demo
+python scripts/demo_import_workflow.py
+```
+
+This demonstrates:
+1. ✅ Importing complaint from unstructured file
+2. ✅ Automatic metadata extraction
+3. ✅ AI processing and analysis
+4. ✅ Draft response generation
+5. ✅ Time savings calculation
+
+**For detailed import guide, see:** [`DEMO_IMPORT.md`](DEMO_IMPORT.md)
+
 ### 1. List All Complaints
 
 ```bash
