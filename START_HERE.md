@@ -51,30 +51,33 @@ An API key is like a password that lets the AI work for you.
 
 ---
 
-### Step 3: Load Example Data (1 minute)
+### Step 3: Try It! (3 minutes)
 
-Open a terminal/command prompt and type:
+Now the fun part - let's see what the AI can do!
 
+#### Option A: Quick Automated Demo (RECOMMENDED)
+```bash
+python scripts/demo_import_workflow.py
+```
+
+This shows the complete workflow in 2 minutes:
+- Imports a complaint from a file
+- Processes it with AI
+- Shows all the results
+
+**This is the fastest way to see the system working!**
+
+#### Option B: Manual Step-by-Step
+
+**Load example data:**
 ```bash
 python cli.py init
 ```
-
-This loads 5 example complaints into the system so you can try it out.
-
-You'll see messages saying it's loading complaints - this is normal!
-
----
-
-### Step 4: Try It! (2 minutes)
-
-Now the fun part - let's see what the AI can do!
 
 **View all complaints:**
 ```bash
 python cli.py list
 ```
-
-You'll see 5 complaints from customers like Marco Rossi and Sarah Williams.
 
 **Process a complaint with AI:**
 ```bash
@@ -90,6 +93,23 @@ Wait 30-60 seconds and watch the magic:
 ---
 
 ## 🎯 What Can You Do?
+
+### Import Complaints from Files (NEW!)
+```bash
+# Import from PDF, DOCX, or text files
+python cli.py import complaint complaint.pdf
+
+# Or use our test files
+python cli.py import complaint test_data/sample_complaint.txt
+```
+
+The system automatically:
+- Reads the file
+- Extracts customer name, policy number, dates
+- Detects the language
+- Creates the complaint record
+
+**No manual typing needed!**
 
 ### See All Complaints
 ```bash
